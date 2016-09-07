@@ -1,0 +1,7 @@
+#!/bin/sh
+
+JVM_OPTS="-Dfile.encoding=UTF8 -XX:MaxPermSize=512m -Xms512m -Xmx2g -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC"; export JVM_OPTS
+
+rm -f target/scala-2.11/http4c-assembly-*.jar
+
+./sbt -Dsbt.log.noformat=true "; clean; update; test-only -- console junitxml; publish; echo-version"
