@@ -16,15 +16,6 @@ object depend {
 
   val argonaut = Seq("io.argonaut" %% "argonaut" % "6.1")
 
-  val joda = Seq(
-    "joda-time" % "joda-time"     % "2.8.2",
-    "org.joda"  % "joda-convert"  % "1.7"
-  )
-
-  val log4s = Seq(
-    "org.log4s" %% "log4s"  % "1.2.1"
-  )
-
   val http4s = Seq(
     "org.http4s"  %% "http4s-blaze-server",
     "org.http4s"  %% "http4s-dsl",

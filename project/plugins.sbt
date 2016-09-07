@@ -8,6 +8,6 @@ resolvers += Resolver.sonatypeRepo("releases")
 
 resolvers += Resolver.typesafeRepo("releases")
 
-addSbtPlugin("com.ambiata" % "promulgate" % "0.11.0-20141014013725-80c129f")
+addSbtPlugin("com.ambiata" % "promulgate" % "0.11.0-20160104104535-e21b092")
 
 addSbtPlugin("com.orrsella" % "sbt-stats" % "1.0.5")

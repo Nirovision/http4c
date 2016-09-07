@@ -8,13 +8,18 @@ import com.ambiata.promulgate.project.ProjectPlugin._
 object build extends Build {
   type Settings = Def.Setting[_]
 
+  override lazy val settings = super.settings ++ Seq(
+    scalaVersion := "2.11.4"
+  )
+
   lazy val http4c = project(
       "http4c"
     , "."
     , packageSettings(None) ++ Seq[Settings](
       libraryDependencies ++=
-            depend.argonaut
-        ++  depend.scalaz
+           depend.argonaut
+        ++ depend.http4s
+        ++ depend.scalaz
       ) ++ lib("http4c")
   ).dependsOn()
 
