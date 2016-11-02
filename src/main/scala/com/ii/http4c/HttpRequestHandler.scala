@@ -1,4 +1,4 @@
-package com.cammy.http4c
+package com.ii.http4c
 
 import org.http4s.{Response, Request}
 

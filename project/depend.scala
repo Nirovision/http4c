@@ -3,6 +3,8 @@ import sbt._
 object Depend {
   lazy val scalazVersion = "7.1.7"
 
+  lazy val http4sVersion = "0.14.11"
+
   lazy val scalaz = Seq(
     "org.scalaz" %% "scalaz-core"
   ).map(_ % scalazVersion)
@@ -15,7 +17,7 @@ object Depend {
     "org.http4s"  %% "http4s-blaze-server",
     "org.http4s"  %% "http4s-dsl",
     "org.http4s"  %% "http4s-argonaut"
-  ).map (x => (x % "0.12.3").withSources)
+  ).map(_ % http4sVersion).map(_.withSources)
 
   lazy val scalaTestCheck = Seq(
     "org.scalatest"   %% "scalatest"                 % "2.2.4",
@@ -33,6 +35,5 @@ object Depend {
     kindProjectors ++
     argonaut ++
     http4s ++
-    scalaTestCheck 
-
+    scalaTestCheck
 }
