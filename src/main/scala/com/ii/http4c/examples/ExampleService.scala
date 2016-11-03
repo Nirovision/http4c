@@ -4,6 +4,7 @@ import com.ii.http4c.Health.HealthCheck
 import com.ii.http4c.Health.HealthCheckFailure
 import com.ii.http4c.Health.HealthReport
 import com.ii.http4c._
+import com.ii.http4c.middleware.LoggingMiddleware
 import org.http4s.dsl._
 import org.http4s.ParseFailure
 import org.http4s.HttpService
@@ -31,12 +32,12 @@ object Gender {
 
 object ExampleService extends ServerApp {
 
-  val UserIdMatcher = Helpers.pathMatcher(x => Some(UserId(x)))
+  val UserIdMatcher = DslHelpers.pathMatcher(x => Some(UserId(x)))
 
   implicit val GenderQueryParamDecoder =
-    Helpers.queryParamDecoderFromEither(q => Gender.fromString(q).leftMap(x => ParseFailure.apply(x, x)))
+    DslHelpers.queryParamDecoderFromEither(q => Gender.fromString(q).leftMap(x => ParseFailure.apply(x, x)))
 
-  val GenderQueryParam = Helpers.optionalQueryParam[Gender]("gender")
+  val GenderQueryParam = DslHelpers.optionalQueryParam[Gender]("gender")
 
   val userService = HttpService {
     case req @ GET -> Root / UserIdMatcher(userId) :? GenderQueryParam(gender)  => {
@@ -48,13 +49,17 @@ object ExampleService extends ServerApp {
 
   val compiledService = Router(
     "/health" -> healthService.service,
-    "/userService" -> userService
+    "/users" -> userService
   )
+
+  val middlewareStack = LoggingMiddleware.basicLoggingMiddleware(x => println(x))
+
+  val compiledServiceWithMiddleware = middlewareStack(compiledService)
 
   def server(args: List[String]): Task[Server] = {
     BlazeBuilder
       .bindHttp(8080, "0.0.0.0")
-      .mountService(compiledService)
+      .mountService(compiledServiceWithMiddleware)
       .start
   }
 }

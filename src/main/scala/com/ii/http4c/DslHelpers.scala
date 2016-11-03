@@ -6,7 +6,7 @@ import org.http4s.dsl._
 import scalaz._
 import Scalaz._
 
-object Helpers {
+object DslHelpers {
 
   case class MatchPathVar[A](f: String => Option[A]) {
     def unapply(str: String): Option[A] = f(str)
