@@ -1,6 +1,6 @@
 package com.ii.http4c
 
-import org.http4s.{Response, Request}
+import org.http4s.Response
 
 import scalaz._, Scalaz._
 
