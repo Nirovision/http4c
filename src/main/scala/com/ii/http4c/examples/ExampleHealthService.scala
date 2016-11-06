@@ -13,5 +13,5 @@ object ExampleHealthService {
 
   val report = HealthReport(List(pg, mo, de))
 
-  val service = HealthReportService(report)
+  val service = HealthReportService(report).service
 }
