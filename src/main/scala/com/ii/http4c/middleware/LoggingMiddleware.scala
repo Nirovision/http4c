@@ -1,6 +1,4 @@
 package com.ii.http4c.middleware
-
-import com.ii.http4c.headers.`Accept-Version`
 import org.http4s._
 
 object LoggingMiddleware {
@@ -18,8 +16,7 @@ object LoggingMiddleware {
     apply(_) { case (req, resp) =>
 
       val code = resp.status.code
-      val version = req.headers.get(`Accept-Version`).map(x => s"V${x.version}").getOrElse("No Accept-Version header")
-      val defaultMsg = s"${version} - ${resp.status.code} - ${req.method} ${req.uri.toString}"
+      val defaultMsg = s"${resp.status.code} - ${req.method} ${req.uri.toString}"
 
       val msg = floorCode(code) match {
         case 100 => defaultMsg
