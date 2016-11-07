@@ -15,7 +15,7 @@ Available at [Bintray](https://bintray.com/imageintelligence/maven/http4c) and b
 Just add this to your build.sbt
 
 ```
-"com.imageintelligence" %% "http4c" % "v0.0.1"
+"com.imageintelligence" %% "http4c" % "0.0.2"
 ```
 
 ### As a project to work on
