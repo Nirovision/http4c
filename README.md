@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/ImageIntelligence/http4c.svg?branch=master)](https://travis-ci.org/ImageIntelligence/http4c)
 [![Download](https://api.bintray.com/packages/imageintelligence/maven/http4c/images/download.svg)](https://bintray.com/imageintelligence/maven/http4c/_latestVersion)
 
-A collection of utilities to help make working with [http4s](http4s.org) easier.
+A collection of utilities to help make working with [http4s](http://http4s.org) easier.
 
 ## Published artifacts:
 
