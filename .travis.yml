@@ -2,15 +2,13 @@ language: scala
 scala:
 - 2.11.8
 
-env:
-  global:
-  - LIB_VERSION=$TRAVIS_BUILD_NUMBER
-
 deploy:
   skip_cleanup: true
   provider: script
   script: project/publish.sh
+  env:
+    LIB_VERSION=$TRAVIS_TAG
   on:
-    branch: master
+    tags: true
 
 script: sbt compile
