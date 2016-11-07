@@ -16,8 +16,8 @@ object DslHelpers {
     MatchPathVar(f)
   }
 
-  def validatingPathMatcher[A](f: String => ParseFailure \/ A): MatchPathVar[ParseFailure \/ A] = {
-    val v: String => Option[ParseFailure \/ A] = f(_) match {
+  def validatingPathMatcher[E, A](f: String => E \/ A): MatchPathVar[E \/ A] = {
+    val v: String => Option[E \/ A] = f(_) match {
       case \/-(a)   => Some(a.right)
       case -\/(e) => Some(e.left)
     }

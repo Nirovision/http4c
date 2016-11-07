@@ -1,7 +1,6 @@
 package com.ii.http4c.examples
 
 import com.ii.http4c.DslHelpers
-import com.ii.http4c.DslHelpers.MatchPathVar
 import org.http4s.ParseFailure
 import org.http4s.HttpService
 import org.http4s.dsl._
@@ -25,7 +24,6 @@ object Gender {
 
 object ExampleUserService {
 
-
   implicit val GenderQueryParamDecoder =
     DslHelpers.queryParamDecoderFromEither(q => Gender.fromString(q).leftMap(x => ParseFailure.apply(x, x)))
 
@@ -33,14 +31,14 @@ object ExampleUserService {
 
   val UserIdMatcher = DslHelpers.validatingPathMatcher { x =>
     if (x.length > 6) UserId(x).right
-    else ParseFailure("Bad user id", "").left
+    else "Bad user id".left
   }
 
   val service = HttpService {
     case req @ GET -> Root / UserIdMatcher(userId) :? GenderQueryParam(gender)  => {
       userId match {
         case \/-(id) => Ok(id.value)
-        case -\/(error) => BadRequest(error.sanitized)
+        case -\/(error) => BadRequest(error)
       }
     }
   }

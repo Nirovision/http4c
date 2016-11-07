@@ -22,7 +22,8 @@ object Depend {
   lazy val scalaTestCheck = Seq(
     "org.scalatest"   %% "scalatest"                 % "2.2.4",
     "org.scalacheck"  %% "scalacheck"                % "1.12.2",
-    "org.scalaz"      %% "scalaz-scalacheck-binding" % scalazVersion
+    "org.scalaz"      %% "scalaz-scalacheck-binding" % scalazVersion,
+    "org.typelevel"   %% "scalaz-scalatest"          % "1.1.0"
   ).map(_.withSources).map(_ % "test")
 
   lazy val depResolvers = Seq(
