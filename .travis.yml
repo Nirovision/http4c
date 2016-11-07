@@ -1,8 +1,15 @@
 language: scala
 scala:
 - 2.11.8
+
 env:
   global:
-  - LIB_VERSION=$TRAVIS_BUILD_NUMBER
-before_script: ./project/bintray.sh
-script: sbt compile +publishSigned
+  - LIB_VERSION=$TRAVIS_TAG
+
+deploy:
+  provider: script
+  script: project/publish.sh
+  on:
+    branch: master
+
+script: sbt compile
