@@ -4,7 +4,7 @@ scala:
 
 env:
   global:
-  - LIB_VERSION=$TRAVIS_TAG
+  - LIB_VERSION=$TRAVIS_BUILD_NUMBER
 
 deploy:
   skip_cleanup: true
