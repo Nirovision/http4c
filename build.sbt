@@ -3,7 +3,7 @@ import Depend._
 lazy val buildSettings = Seq(
   name := "http4c",
   organization := "com.imageintelligence",
-  version := "0.1.0",
+  version := Try(sys.env("LIB_VERSION")).getOrElse("1.0.0"),
   scalaVersion := "2.11.8",
   resolvers := Depend.depResolvers,
   libraryDependencies := Depend.dependencies,
