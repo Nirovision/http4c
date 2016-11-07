@@ -1,5 +1,7 @@
 import Depend._
 
+import scala.util.Try
+
 lazy val buildSettings = Seq(
   name := "http4c",
   organization := "com.imageintelligence",
