@@ -1,5 +1,5 @@
 language: scala
 scala:
 - 2.11.8
-before_script: ./publish/bintray.sh
+before_script: ./project/bintray.sh
 script: sbt compile +publishSigned
