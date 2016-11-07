@@ -1,4 +1,3 @@
-
 realm = Bintray API Realm
 host = api.bintray.com
 user = $BINTRAY_USER
