@@ -7,6 +7,7 @@ env:
   - LIB_VERSION=$TRAVIS_TAG
 
 deploy:
+  skip_cleanup: true
   provider: script
   script: project/publish.sh
   on:
