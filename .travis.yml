@@ -7,6 +7,6 @@ deploy:
   provider: script
   script: project/publish.sh
   env:
-    LIB_VERSION=$TRAVIS_TAG
+    LIB_VERSION=$TRAVIS_BUILD_NUMBER
 
 script: sbt compile
