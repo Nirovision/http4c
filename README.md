@@ -1,6 +1,6 @@
 # http4c
 
-[![Build Status](https://travis-ci.com/ImageIntelligence/http4c.svg?token=NJ1xLqMytzcqdDGz7JyV&branch=master)](https://travis-ci.com/ImageIntelligence/http4c)
+[![Build Status](https://travis-ci.org/ImageIntelligence/http4c.svg?branch=master)](https://travis-ci.org/ImageIntelligence/http4c)
 
 A collection of utilities to help make working with [http4s](http4s.org) easier.
 
