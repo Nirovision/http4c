@@ -8,7 +8,5 @@ deploy:
   script: project/publish.sh
   env:
     LIB_VERSION=$TRAVIS_TAG
-  on:
-    tags: true
 
 script: sbt compile
