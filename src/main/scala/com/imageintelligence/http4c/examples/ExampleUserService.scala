@@ -1,6 +1,6 @@
-package com.ii.http4c.examples
+package com.imageintelligence.http4c.examples
 
-import com.ii.http4c.DslHelpers
+import com.imageintelligence.http4c.DslHelpers
 import org.http4s.ParseFailure
 import org.http4s.HttpService
 import org.http4s.dsl._

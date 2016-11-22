@@ -1,4 +1,5 @@
-package com.ii.http4c.middleware
+package com.imageintelligence.http4c.middleware
+
 import org.http4s._
 
 object LoggingMiddleware {

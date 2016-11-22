@@ -1,4 +1,4 @@
-package com.ii.http4c.headers
+package com.imageintelligence.http4c.headers
 
 import scalaz._, Scalaz._
 import org.http4s.HeaderKey

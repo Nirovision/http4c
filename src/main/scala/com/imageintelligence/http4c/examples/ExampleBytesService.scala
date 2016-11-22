@@ -1,4 +1,4 @@
-package com.ii.http4c.examples
+package com.imageintelligence.http4c.examples
 
 import org.http4s.HttpService
 import org.http4s.dsl._

@@ -1,4 +1,4 @@
-package com.ii.http4c.examples
+package com.imageintelligence.http4c.examples
 
 import com.ii.http4c.middleware.LoggingMiddleware
 import org.http4s.server._

@@ -1,4 +1,4 @@
-package com.ii.http4c
+package com.imageintelligence.http4c
 
 import org.http4s.{Response, Request}
 

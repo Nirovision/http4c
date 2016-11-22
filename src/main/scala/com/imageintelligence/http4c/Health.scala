@@ -1,4 +1,4 @@
-package com.ii.http4c
+package com.imageintelligence.http4c
 
 import java.util.concurrent.TimeUnit
 

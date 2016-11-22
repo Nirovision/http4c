@@ -1,10 +1,10 @@
-package com.ii.http4c
-import argonaut._, Argonaut._
+package com.imageintelligence.http4c
+
 import org.http4s._
 import org.http4s.dsl._
 
 import scalaz._
-import Scalaz._
+import scalaz.Scalaz._
 
 object DslHelpers {
 

@@ -1,11 +1,7 @@
-package com.ii.http4c.middleware
+package com.imageintelligence.http4c.middleware
 
-import com.ii.http4c.headers.`Accept-Version`
 import org.http4s.HttpService
 import org.http4s.Service
-
-import scalaz._
-import Scalaz._
 
 object ApiVersionMiddleware {
   def apply(defaultService: HttpService, versions: Map[String, HttpService]): HttpService = Service.lift { req =>
