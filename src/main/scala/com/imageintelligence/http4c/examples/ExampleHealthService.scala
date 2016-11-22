@@ -1,7 +1,7 @@
 package com.imageintelligence.http4c.examples
 
-import com.ii.http4c.Health._
-import com.ii.http4c.HealthReportService
+import com.imageintelligence.http4c.Health._
+import com.imageintelligence.http4c.HealthReportService
 
 import scalaz.concurrent.Task
 

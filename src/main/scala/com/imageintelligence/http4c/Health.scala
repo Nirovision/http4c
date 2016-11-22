@@ -8,7 +8,7 @@ import argonaut._
 import Argonaut._
 import org.http4s._
 import org.http4s.dsl._
-import com.ii.http4c.Health._
+import com.imageintelligence.http4c.Health._
 import ArgonautInstances._
 
 import scala.concurrent.duration.Duration

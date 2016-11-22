@@ -1,5 +1,6 @@
 package com.imageintelligence.http4c.middleware
 
+import com.imageintelligence.http4c.headers.`Accept-Version`
 import org.http4s.HttpService
 import org.http4s.Service
 

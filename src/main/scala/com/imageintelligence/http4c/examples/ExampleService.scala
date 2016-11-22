@@ -1,6 +1,6 @@
 package com.imageintelligence.http4c.examples
 
-import com.ii.http4c.middleware.LoggingMiddleware
+import com.imageintelligence.http4c.middleware.LoggingMiddleware
 import org.http4s.server._
 import org.http4s.server.blaze.BlazeBuilder
 
