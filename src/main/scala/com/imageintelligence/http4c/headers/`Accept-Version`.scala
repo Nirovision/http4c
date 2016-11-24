@@ -8,7 +8,6 @@ import org.http4s.util.CaseInsensitiveString
 import org.http4s.util.Writer
 import scala.util.Try
 
-
 final case class `Accept-Version`(version: String) extends Header.Parsed {
   override def key = `Accept-Version`
   override def renderValue(writer: Writer): writer.type =
