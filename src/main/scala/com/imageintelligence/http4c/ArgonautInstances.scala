@@ -1,8 +1,6 @@
 package com.imageintelligence.http4c
 
-import argonaut.Argonaut
-import argonaut.DecodeJson
-import argonaut.Json
+import argonaut.{Argonaut, DecodeJson, EncodeJson, Json}
 import org.http4s.Charset
 import org.http4s.EntityDecoder
 import org.http4s.EntityEncoder
@@ -11,6 +9,10 @@ import org.http4s.argonaut.{ArgonautInstances => Ai}
 import org.http4s.headers.`Content-Type`
 
 object ArgonautInstances extends Ai {
+  implicit def encodeFromEncodeJson[A](implicit codec: EncodeJson[A]): EntityEncoder[A] = {
+    jsonEncoderOf(codec)
+  }
+
   implicit def decoderFromDecodeJson[A](implicit codec: DecodeJson[A]): EntityDecoder[A] = {
     jsonOf(codec)
   }
