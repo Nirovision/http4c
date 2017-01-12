@@ -1,6 +1,7 @@
 package com.imageintelligence.http4c
 
-import argonaut.{Argonaut, DecodeJson, EncodeJson, Json}
+import argonaut.PrettyParams
+import argonaut._
 import org.http4s.Charset
 import org.http4s.EntityDecoder
 import org.http4s.EntityEncoder
@@ -25,4 +26,6 @@ object ArgonautInstances extends Ai {
 
 
     }.withContentType(`Content-Type`(MediaType.`application/json`, Charset.`UTF-8`))
+
+  protected def defaultPrettyParams: PrettyParams = PrettyParams.nospace
 }

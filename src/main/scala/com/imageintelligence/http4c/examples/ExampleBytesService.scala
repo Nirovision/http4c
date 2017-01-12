@@ -2,10 +2,12 @@ package com.imageintelligence.http4c.examples
 
 import org.http4s.HttpService
 import org.http4s.dsl._
+import scodec.bits.ByteVector
 
 import scalaz.stream.Process
 import scala.util.Random
-import scalaz._, Scalaz._
+import scalaz._
+import Scalaz._
 import scalaz.concurrent.Task
 
 object ExampleBytesService {
@@ -15,7 +17,7 @@ object ExampleBytesService {
       val randomBytes: Process[Task, Byte] = Process.repeatEval(
         Task { (Random.nextInt(256) - 128).toByte }
       )
-      Ok(randomBytes.take(n))
+      Ok(ByteVector.apply(randomBytes.take(n).runLog.run))
     }
   }
 }
