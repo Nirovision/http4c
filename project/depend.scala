@@ -3,7 +3,7 @@ import sbt._
 object Depend {
   lazy val scalazVersion = "7.2.6"
 
-  lazy val http4sVersion = "0.15.2"
+  lazy val http4sVersion = "0.15.2a"
 
   lazy val scalaz = Seq(
     "org.scalaz" %% "scalaz-core"
