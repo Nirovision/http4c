@@ -1,7 +1,5 @@
 package com.imageintelligence.http4c
 
-import org.http4s.ParseFailure
-import org.typelevel.scalatest.DisjunctionMatchers
 import org.scalacheck._
 import org.scalatest.FunSpec
 import org.scalatest.Matchers
@@ -10,7 +8,7 @@ import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import scalaz._
 import Scalaz._
 
-class DslHelpersSpec extends FunSpec with Matchers with GeneratorDrivenPropertyChecks with DisjunctionMatchers {
+class DslHelpersSpec extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
 
   val genPaths = Gen.chooseNum(1, 10).flatMap(n => Gen.listOfN(n, Gen.alphaLowerChar)).map(_.mkString(""))
 
@@ -39,17 +37,18 @@ class DslHelpersSpec extends FunSpec with Matchers with GeneratorDrivenPropertyC
           if (path.length <= 10) path.right
           else s"$path should be longer than 10".left
         }
-        matcher.unapply(path) should be(Some(right))
+        matcher.unapply(path) should be(Some(\/-(path)))
       }
     }
 
     it("should match a path and provide a failed validation") {
       forAll(genPaths) { path =>
+        val error = s"$path should be longer than 10"
         val matcher = DslHelpers.validatingPathMatcher { path =>
           if (path.length > 11) path.right
-          else s"$path should be longer than 10".left
+          else error.left
         }
-        matcher.unapply(path) should be(Some(left))
+        matcher.unapply(path) should be(Some(-\/(error)))
       }
     }
   }

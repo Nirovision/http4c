@@ -18,11 +18,9 @@ object Depend {
   ).map(_ % http4sVersion).map(_.withSources)
 
   lazy val scalaTestCheck = Seq(
-    "org.scalatest"   %% "scalatest"                 % "2.2.4",
-    "org.scalacheck"  %% "scalacheck"                % "1.13.4",
-    "org.scalaz"      %% "scalaz-scalacheck-binding" % scalazVersion,
-    "org.typelevel"   %% "scalaz-scalatest"          % "1.1.0"
-  ).map(_.withSources).map(_ % "test")
+    "org.scalatest"   %% "scalatest"  % "2.2.4",
+    "org.scalacheck"  %% "scalacheck" % "1.12.1"
+  ).map(_.withSources).map(x => x.force()).map(_ % "test")
 
   lazy val depResolvers = Seq(
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
