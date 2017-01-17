@@ -1,6 +1,6 @@
 package com.imageintelligence.http4c.examples
 
-import com.imageintelligence.http4c.middleware.LoggingMiddleware
+import com.imageintelligence.http4c.middleware._
 import org.http4s.server._
 import org.http4s.server.blaze.BlazeBuilder
 
@@ -16,7 +16,9 @@ object ExampleService extends ServerApp {
     "/bytes"  -> ExampleBytesService.service
   )
 
-  val middlewareStack = LoggingMiddleware.basicLoggingMiddleware(x => println(x))
+  val metricsMiddleware = MetricsMiddleware(x => println(x), (x, y, z) => println(x), "example")(_)
+  val loggingMiddleware = LoggingMiddleware.basicLoggingMiddleware(x => println(x))(_)
+  val middlewareStack = metricsMiddleware andThen loggingMiddleware
 
   val compiledServiceWithMiddleware = middlewareStack(compiledService)
 

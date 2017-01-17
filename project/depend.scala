@@ -2,14 +2,14 @@ import sbt._
 
 object Depend {
   lazy val scalazVersion = "7.2.6"
-
   lazy val http4sVersion = "0.15.2a"
+  lazy val argonautVersion = "6.2-RC2"
 
   lazy val scalaz = Seq(
     "org.scalaz" %% "scalaz-core"
   ).map(_ % scalazVersion)
 
-  lazy val argonaut = Seq("io.argonaut" %% "argonaut" % "6.2-RC2")
+  lazy val argonaut = Seq("io.argonaut" %% "argonaut" % argonautVersion)
 
   lazy val http4s = Seq(
     "org.http4s"  %% "http4s-blaze-server",

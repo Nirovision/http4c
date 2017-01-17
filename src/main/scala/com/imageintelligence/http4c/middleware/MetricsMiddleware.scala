@@ -1,0 +1,60 @@
+package com.imageintelligence.http4c.middleware
+
+import org.http4s._
+import scala.concurrent.duration._
+import scalaz._, Scalaz._
+import scalaz.concurrent.Task
+import scalaz.stream.Cause.End
+import scalaz.stream.Process._
+
+object MetricsMiddleware {
+
+  val MetricsPrefix     = "http4s"
+
+  def statusCodeToTag(code: Int): String = {
+    val prefix = MetricsPrefix + ".status."
+    val flooredCode = (code / 100) * 100
+    prefix + flooredCode.toString
+  }
+
+  def apply(increment: String => Unit, histogram: (String, Long, String*) => Unit, servicePrefix: String)(srvc: HttpService): HttpService = {
+
+    def prefix(str: String): String = MetricsPrefix + "." + servicePrefix + "." + str
+
+    def generalMetrics(method: Method, code: Int, elapsed: FiniteDuration): Unit = {
+      val tag = statusCodeToTag(code)
+      histogram(prefix(method.name.toLowerCase + ".response.ms"), elapsed.toMillis, tag)
+      histogram(prefix("response.ms"), elapsed.toMillis, tag)
+    }
+
+    def onFinish(method: Method, start: Long)(responseE: Throwable \/ Response): Throwable \/ Response = {
+      val elapsed = (System.nanoTime() - start).nanos
+      responseE match {
+        case \/-(response) => {
+          histogram(prefix("headers.ms"), (System.nanoTime() - start).nanos.toMillis)
+          val code = response.status.code
+          val body = response.body.onHalt { cause =>
+            generalMetrics(method, code, elapsed)
+            cause match {
+              case End => halt
+              case _   =>
+                histogram(prefix("abnormal_termination.ms"), elapsed.toMillis)
+                Halt(cause)
+            }
+          }
+          response.copy(body = body).right
+        }
+        case -\/(e) => {
+          generalMetrics(method, 500, elapsed)
+          histogram(prefix("service_failure.ms"), elapsed.toMillis)
+          e.left
+        }
+      }
+    }
+
+    Service.lift { req: Request =>
+      increment(prefix("active_requests"))
+      new Task(srvc(req).get.map(onFinish(req.method, System.nanoTime())))
+    }
+  }
+}
