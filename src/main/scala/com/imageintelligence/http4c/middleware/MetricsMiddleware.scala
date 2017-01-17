@@ -53,9 +53,12 @@ object MetricsMiddleware {
       }
     }
 
-    Service.lift { req: Request =>
+    Service.lift { req =>
       increment(prefix("active_requests"))
-      new Task(srvc(req).get.map(onFinish(req.method, System.nanoTime())))
+      srvc.run(req).attempt.map(onFinish(req.method, System.nanoTime())) flatMap {
+        case \/-(response) => Task(response)
+        case -\/(e) => Task.fail(e)
+      }
     }
   }
 }
