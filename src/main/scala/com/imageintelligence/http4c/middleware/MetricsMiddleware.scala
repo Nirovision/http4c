@@ -9,17 +9,18 @@ import scalaz.stream.Process._
 
 object MetricsMiddleware {
 
-  val MetricsPrefix     = "http4s"
-
-  def statusCodeToTag(code: Int): String = {
-    val prefix = MetricsPrefix + ".status."
-    val flooredCode = (code / 100) * 100
-    prefix + flooredCode.toString
-  }
+  val metricsPrefix = "http4s"
 
   def apply(increment: String => Unit, histogram: (String, Long, String*) => Unit, servicePrefix: String)(srvc: HttpService): HttpService = {
 
-    def prefix(str: String): String = MetricsPrefix + "." + servicePrefix + "." + str
+    def prefix(str: String): String = {
+      s"${metricsPrefix}.${servicePrefix}.${str}"
+    }
+
+    def statusCodeToTag(code: Int): String = {
+      val flooredCode = (code / 100) * 100
+      prefix(s".status.${flooredCode.toString}")
+    }
 
     def generalMetrics(method: Method, code: Int, elapsed: FiniteDuration): Unit = {
       val tag = statusCodeToTag(code)
