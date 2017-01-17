@@ -1,8 +1,11 @@
 package com.imageintelligence.http4c.middleware
 
 import org.http4s._
+import org.http4s.server.HttpMiddleware
+
 import scala.concurrent.duration._
-import scalaz._, Scalaz._
+import scalaz._
+import Scalaz._
 import scalaz.concurrent.Task
 import scalaz.stream.Cause.End
 import scalaz.stream.Process._
@@ -11,7 +14,7 @@ object MetricsMiddleware {
 
   val metricsPrefix = "http4s"
 
-  def apply(increment: String => Unit, histogram: (String, Long, String*) => Unit, servicePrefix: String)(srvc: HttpService): HttpService = {
+  def apply(increment: String => Unit, histogram: (String, Long, String*) => Unit, servicePrefix: String): HttpMiddleware = { service =>
 
     def prefix(str: String): String = {
       s"${metricsPrefix}.${servicePrefix}.${str}"
