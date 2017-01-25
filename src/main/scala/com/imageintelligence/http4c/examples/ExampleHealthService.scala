@@ -1,7 +1,5 @@
 package com.imageintelligence.http4c.examples
 
-import java.time.Instant
-
 import com.imageintelligence.http4c.Health._
 import com.imageintelligence.http4c.HealthReportService
 

@@ -88,12 +88,10 @@ object Health {
   }
 
   implicit def HealthReportResultEncodeJson = EncodeJson[HealthReportResult] { h =>
-
     Json (
       "checks" := h.results.foldLeft(jEmptyObject){ case (i, e) => i.deepmerge(e.asJson) },
       "uptime" := h.uptime
     )
-
   }
 
   private def timeM[M[_]: Monad, A](now: M[Long], task: M[A]): M[(Duration, A)] = {
