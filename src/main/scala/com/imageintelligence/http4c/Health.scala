@@ -30,8 +30,8 @@ object Health {
       val hours = TimeUnit.MILLISECONDS.toHours(millis) % 24
       val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
       val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
-      val milliseconds = millis % 1000;
-      s"$days Days $hours Hours $minutes Minutes $seconds Seconds $milliseconds Milliseconds"
+      val milliseconds = millis % 1000
+      s"$days days $hours hours $minutes minutes $seconds seconds $milliseconds milliseconds"
     }
   }
 
