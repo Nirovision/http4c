@@ -1,5 +1,6 @@
 package com.imageintelligence.http4c
 
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 import scalaz._
@@ -16,6 +17,31 @@ import scalaz.concurrent.Task
 
 object Health {
 
+  case class UptimeReport(startedAt: Instant) {
+    def asInstant: Instant =
+      Instant.now().minusMillis(startedAt.toEpochMilli)
+
+    def asMillis: Long =
+      asInstant.toEpochMilli
+
+    def asHumanized: String = {
+      val millis = asMillis
+      val days = TimeUnit.MILLISECONDS.toDays(millis)
+      val hours = TimeUnit.MILLISECONDS.toHours(millis) % 24
+      val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
+      val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
+      val milliseconds = millis % 1000;
+      s"$days Days $hours Hours $minutes Minutes $seconds Seconds $milliseconds Milliseconds"
+    }
+  }
+
+  implicit def UptimeReportEncodeJson = EncodeJson[UptimeReport](
+    a => Json(
+      "humanized" := a.asHumanized,
+      "millis" := a.asMillis
+    )
+  )
+
   sealed trait HealthCheckStatus
   final case object HealthCheckSuccess extends HealthCheckStatus
   final case class HealthCheckFailure(reason: Throwable, fatal: Boolean) extends HealthCheckStatus
@@ -24,7 +50,8 @@ object Health {
 
   case class HealthCheckResult(name: String, status: HealthCheckStatus, timeTaken: Duration)
 
-  case class HealthReportResult(results: List[HealthCheckResult]) {
+  case class HealthReportResult(uptime: UptimeReport, results: List[HealthCheckResult]) {
+
     def isFatal = results.exists { x =>
       x.status match {
         case HealthCheckFailure(_, fatal) => fatal
@@ -39,8 +66,10 @@ object Health {
         val timedTask = timeM(Task.apply(System.currentTimeMillis()), c.check)
         timedTask.map { case (duration, status) => HealthCheckResult(c.name, status, duration) }
       }
-      results.map(x => HealthReportResult(x))
+      results.map(x => HealthReportResult(uptime, x))
     }
+
+    val uptime: UptimeReport = UptimeReport(Instant.now)
   }
 
   implicit def HealthCheckStatusEncodeJson = EncodeJson[HealthCheckStatus] { h =>
@@ -59,7 +88,12 @@ object Health {
   }
 
   implicit def HealthReportResultEncodeJson = EncodeJson[HealthReportResult] { h =>
-    h.results.foldLeft(jEmptyObject){ case (i, e) => i.deepmerge(e.asJson) }
+
+    Json (
+      "checks" := h.results.foldLeft(jEmptyObject){ case (i, e) => i.deepmerge(e.asJson) },
+      "uptime" := h.uptime
+    )
+
   }
 
   private def timeM[M[_]: Monad, A](now: M[Long], task: M[A]): M[(Duration, A)] = {
