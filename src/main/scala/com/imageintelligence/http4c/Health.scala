@@ -1,8 +1,6 @@
 package com.imageintelligence.http4c
 
-import java.time.Instant
 import java.util.concurrent.TimeUnit
-
 import scalaz._
 import Scalaz._
 import argonaut._
@@ -17,12 +15,9 @@ import scalaz.concurrent.Task
 
 object Health {
 
-  case class UptimeReport(startedAt: Instant) {
-    def asInstant: Instant =
-      Instant.now().minusMillis(startedAt.toEpochMilli)
-
+  case class UptimeReport(startedAt: Long) {
     def asMillis: Long =
-      asInstant.toEpochMilli
+      System.currentTimeMillis - startedAt
 
     def asHumanized: String = {
       val millis = asMillis
@@ -30,8 +25,7 @@ object Health {
       val hours = TimeUnit.MILLISECONDS.toHours(millis) % 24
       val minutes = TimeUnit.MILLISECONDS.toMinutes(millis) % 60
       val seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % 60
-      val milliseconds = millis % 1000
-      s"$days days $hours hours $minutes minutes $seconds seconds $milliseconds milliseconds"
+      s"$days days $hours hours $minutes minutes $seconds seconds"
     }
   }
 
@@ -69,7 +63,7 @@ object Health {
       results.map(x => HealthReportResult(uptime, x))
     }
 
-    val uptime: UptimeReport = UptimeReport(Instant.now)
+    val uptime: UptimeReport = UptimeReport(System.currentTimeMillis)
   }
 
   implicit def HealthCheckStatusEncodeJson = EncodeJson[HealthCheckStatus] { h =>
