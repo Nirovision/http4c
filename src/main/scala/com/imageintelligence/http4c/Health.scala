@@ -32,7 +32,7 @@ object Health {
   implicit def UptimeReportEncodeJson = EncodeJson[UptimeReport](
     a => Json(
       "humanized" := a.asHumanized,
-      "millis" := a.asMillis
+      "ms"        := a.asMillis
     )
   )
 
