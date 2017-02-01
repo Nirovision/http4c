@@ -18,7 +18,7 @@ object ExampleService extends ServerApp {
 
   val metricsMiddleware = MetricsMiddleware(x => println(x), (x, y, z) => println(x), "example")(_)
   val jsonLoggingMiddleware = LoggingMiddleware.jsonLoggingMiddleware(x => println(x))(_)
-  val basicLoggingMiddleware = LoggingMiddleware.jsonLoggingMiddleware(x => println(x))(_)
+  val basicLoggingMiddleware = LoggingMiddleware.basicLoggingMiddleware(x => println(x))(_)
   val middlewareStack = metricsMiddleware andThen jsonLoggingMiddleware andThen basicLoggingMiddleware
 
   val compiledServiceWithMiddleware = middlewareStack(compiledService)

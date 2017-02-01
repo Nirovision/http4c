@@ -10,15 +10,15 @@ case class JsonLogLine(req: Request, resp: Response)
 object JsonLogLine {
   implicit def EncodeJsonLogLine: EncodeJson[JsonLogLine] = EncodeJson { a =>
     Json(
-      "req" := Json(
-        "method" := a.req.method.toString(),
+      "request" := Json(
+        "method" := a.req.method.toString,
         "uri" := a.req.uri.toString,
         "headers" := a.req.headers.toList.map(h => (h.name.toString, h.value)).toMap,
         "queryString" := a.req.queryString,
         "remoteUser" := a.req.remoteUser,
         "remoteHost" := a.req.remoteHost
       ),
-      "resp" := Json(
+      "response" := Json(
         "code" := a.resp.status.code.toString,
         "headers" := a.resp.headers.toList.map(h => (h.name.toString, h.value)).toMap
       )
@@ -35,29 +35,29 @@ object LoggingMiddleware {
     notHealth && notStatus && notOptions
   }
 
-  def apply(log: (Request, Response) => Unit): HttpMiddleware = { service =>
+  def apply(shouldLog: Request => Boolean)(log: (Request, Response) => Unit): HttpMiddleware = { service =>
     HttpService.lift { request =>
       service.run(request).map { response =>
-        log(request, response)
+        if (shouldLog(request)) {
+          log(request, response)
+        }
         response
       }
     }
   }
 
-  def jsonLoggingMiddleware(log: String => Unit): HttpMiddleware = {
-    apply { case (req, resp) =>
-      if (toLog(req)) {
-        log(JsonLogLine(req, resp).asJson.nospaces)
-      }
+  def jsonLoggingMiddleware(log: String => Unit, shouldLog: Request => Boolean = toLog): HttpMiddleware = {
+    apply(shouldLog) { case (req, resp) =>
+      log(JsonLogLine(req, resp).asJson.nospaces)
     }
   }
 
-  def basicLoggingMiddleware(log: String => Unit): HttpMiddleware = {
+  def basicLoggingMiddleware(log: String => Unit, shouldLog: Request => Boolean = toLog): HttpMiddleware = {
     def floorCode(code: Int): Int = {
       (code / 100) * 100
     }
 
-    apply { case (req, resp) =>
+    apply(shouldLog) { case (req, resp) =>
       val code = resp.status.code
       val defaultMsg = s"${resp.status.code} - ${req.method} ${req.uri.toString}"
 
@@ -68,9 +68,7 @@ object LoggingMiddleware {
         case 400 => s"${defaultMsg} - Req: ${req} - Resp: ${resp}"
         case 500 => s"${defaultMsg} - Req: ${req} - Resp: ${resp}"
       }
-      if (toLog(req)) {
-        log(msg)
-      }
+      log(msg)
     }
   }
 
