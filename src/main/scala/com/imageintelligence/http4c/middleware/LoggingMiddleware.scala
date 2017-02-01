@@ -1,21 +1,63 @@
 package com.imageintelligence.http4c.middleware
 
+import argonaut._
+import Argonaut._
 import org.http4s._
+import org.http4s.server.HttpMiddleware
+
+case class JsonLogLine(req: Request, resp: Response)
+
+object JsonLogLine {
+  implicit def EncodeJsonLogLine: EncodeJson[JsonLogLine] = EncodeJson { a =>
+    Json(
+      "request" := Json(
+        "method" := a.req.method.toString,
+        "uri" := a.req.uri.toString,
+        "headers" := a.req.headers.toList.map(h => (h.name.toString, h.value)).toMap,
+        "queryString" := a.req.queryString,
+        "remoteUser" := a.req.remoteUser,
+        "remoteHost" := a.req.remoteHost
+      ),
+      "response" := Json(
+        "code" := a.resp.status.code.toString,
+        "headers" := a.resp.headers.toList.map(h => (h.name.toString, h.value)).toMap
+      )
+    )
+  }
+}
 
 object LoggingMiddleware {
 
-  def apply(service: HttpService)(log: (Request, Response) => Unit): HttpService = {
+  def toLog(req: Request): Boolean = {
+    val notHealth = req.pathInfo != "/health"
+    val notStatus = req.pathInfo != "/status"
+    val notOptions = req.method != Method.OPTIONS
+    notHealth && notStatus && notOptions
+  }
+
+  def apply(shouldLog: Request => Boolean)(log: (Request, Response) => Unit): HttpMiddleware = { service =>
     HttpService.lift { request =>
       service.run(request).map { response =>
-        log(request, response)
+        if (shouldLog(request)) {
+          log(request, response)
+        }
         response
       }
     }
   }
 
-  def basicLoggingMiddleware(log: String => Unit): HttpService => HttpService = {
-    apply(_) { case (req, resp) =>
+  def jsonLoggingMiddleware(log: String => Unit, shouldLog: Request => Boolean = toLog): HttpMiddleware = {
+    apply(shouldLog) { case (req, resp) =>
+      log(JsonLogLine(req, resp).asJson.nospaces)
+    }
+  }
 
+  def basicLoggingMiddleware(log: String => Unit, shouldLog: Request => Boolean = toLog): HttpMiddleware = {
+    def floorCode(code: Int): Int = {
+      (code / 100) * 100
+    }
+
+    apply(shouldLog) { case (req, resp) =>
       val code = resp.status.code
       val defaultMsg = s"${resp.status.code} - ${req.method} ${req.uri.toString}"
 
@@ -26,21 +68,8 @@ object LoggingMiddleware {
         case 400 => s"${defaultMsg} - Req: ${req} - Resp: ${resp}"
         case 500 => s"${defaultMsg} - Req: ${req} - Resp: ${resp}"
       }
-      if (toLog(req)) {
-        log(msg)
-      }
+      log(msg)
     }
-  }
-
-  private def floorCode(code: Int): Int = {
-    (code / 100) * 100
-  }
-
-  private def toLog(req: Request): Boolean = {
-    val notHealth = req.pathInfo != "/health"
-    val notStatus = req.pathInfo != "/status"
-    val notOptions = req.method != Method.OPTIONS
-    notHealth && notStatus && notOptions
   }
 
 }
