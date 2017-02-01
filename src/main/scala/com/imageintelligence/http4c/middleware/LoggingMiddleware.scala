@@ -47,7 +47,7 @@ object LoggingMiddleware {
   def jsonLoggingMiddleware(log: String => Unit): HttpMiddleware = {
     apply { case (req, resp) =>
       if (toLog(req)) {
-        log(JsonLogLine(req, resp).asJson.spaces2)
+        log(JsonLogLine(req, resp).asJson.nospaces)
       }
     }
   }
