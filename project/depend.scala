@@ -17,6 +17,10 @@ object Depend {
     "org.http4s"  %% "http4s-argonaut"
   ).map(_ % http4sVersion).map(_.withSources)
 
+  lazy val jwt = Seq(
+    "com.auth0" % "java-jwt" % "3.0.1"
+  )
+
   lazy val scalaTestCheck = Seq(
     "org.scalatest"   %% "scalatest"  % "2.2.4",
     "org.scalacheck"  %% "scalacheck" % "1.12.1"
@@ -31,5 +35,6 @@ object Depend {
     scalaz ++
     argonaut ++
     http4s ++
+    jwt ++
     scalaTestCheck
 }
