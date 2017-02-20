@@ -2,6 +2,7 @@ package com.imageintelligence.http4c.examples
 
 import org.http4s.HttpService
 import org.http4s.dsl._
+import org.http4s.headers.Authorization
 import scodec.bits.ByteVector
 
 import scalaz.stream.Process
@@ -14,6 +15,7 @@ object ExampleBytesService {
 
   val service: HttpService = HttpService {
     case req @ _ -> Root / IntVar(n) => {
+      println(req.headers.get(Authorization))
       val randomBytes: Process[Task, Byte] = Process.repeatEval(
         Task { (Random.nextInt(256) - 128).toByte }
       )
