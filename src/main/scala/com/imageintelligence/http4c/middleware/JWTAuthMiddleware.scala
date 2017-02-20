@@ -18,6 +18,7 @@ object JWTAuthMiddleware {
   def getBearerToken(req: Request): String \/ String = {
     req.headers.get(Authorization) match {
       case Some(Authorization(OAuth2BearerToken(token))) => token.right
+      case Some(_) => "Authorization header was not of type Bearer".left
       case None => "Couldn't find an Authorization header".left
     }
   }
