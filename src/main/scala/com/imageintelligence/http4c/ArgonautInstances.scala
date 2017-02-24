@@ -35,7 +35,7 @@ object ArgonautInstances {
     Http4sAi.jsonDecoder.flatMapR { json =>
       decoder.decodeJson(json).fold(
         (message, history) => {
-          val m = s"Could not decode JSON: $json, error: $message"
+          val m = s"Could not decode JSON. Error: $message"
           DecodeResult.failure(GenericDecodeFailure(m, v => Response(Status.UnprocessableEntity, v).withBody(m)))
         },
         DecodeResult.success(_)
