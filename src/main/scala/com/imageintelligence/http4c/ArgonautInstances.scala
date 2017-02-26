@@ -1,14 +1,10 @@
 package com.imageintelligence.http4c
 
-//import argonaut.PrettyParams
-//import argonaut._
 import argonaut.DecodeJson
 import argonaut.EncodeJson
 import argonaut.Json
 import argonaut.PrettyParams
-import argonaut.Argonaut
 import org.http4s._
-import jawn.jawnDecoder
 import org.http4s.argonaut.{ArgonautInstances => Ai}
 import org.http4s.headers.`Content-Type`
 import scalaz._, Scalaz._

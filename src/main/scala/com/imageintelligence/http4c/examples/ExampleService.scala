@@ -13,11 +13,12 @@ object ExampleService extends ServerApp {
   val jwtAuthedMiddleware = JWTAuthMiddleware("example secret", jwt => jwt.right)
 
   val compiledService = Router(
-    "/health"    -> ExampleHealthService.service,
-    "/users"     -> ExampleUserService.service,
-    "/authed"    -> jwtAuthedMiddleware(ExampleAuthedService.service),
-    "/bytes"     -> ExampleBytesService.service,
-    "/argonaut"  -> ExampleArgonautService.service
+    "/health"       -> ExampleHealthService.service,
+    "/users"        -> ExampleUserService.service,
+    "/authed"       -> jwtAuthedMiddleware(ExampleAuthedService.service),
+    "/bytes"        -> ExampleBytesService.service,
+    "/argonaut"     -> ExampleArgonautService.service,
+    "/api-response" -> ExampleApiResponse.service
   )
 
   val metricsMiddleware = MetricsMiddleware(x => println(x), (x, y, z) => println(x), "example")(_)
