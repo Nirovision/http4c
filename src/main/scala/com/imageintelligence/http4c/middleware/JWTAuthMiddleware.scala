@@ -12,25 +12,44 @@ import scalaz._
 import Scalaz._
 import scalaz.concurrent.Task
 
+sealed trait JWTAuthError {
+  def renderSanitized: String = this match {
+    case InvalidHeaderType(header) => s"Invalid Authorization value. Must be of type Bearer, not ${header}"
+    case NoAuthorizationHeader => s"Could not find an Authorization header"
+    case UnknownErrorVerifyingJWT(_) => s"Error verifying token"
+  }
+
+  def render: String = this match {
+    case InvalidHeaderType(header) => s"Invalid Authorization value. Must be of type Bearer, not ${header}"
+    case NoAuthorizationHeader => s"Could not find an Authorization header"
+    case UnknownErrorVerifyingJWT(e) => s"Error verifying token: ${e.getMessage}"
+  }
+}
+case class InvalidHeaderType(header: String) extends JWTAuthError
+case object NoAuthorizationHeader extends JWTAuthError
+case class UnknownErrorVerifyingJWT(e: Throwable) extends JWTAuthError
+
 object JWTAuthMiddleware {
 
-  def getBearerToken(req: Request): Throwable \/ String = {
+  def getBearerToken(req: Request): JWTAuthError \/ String = {
     req.headers.get(Authorization) match {
       case Some(Authorization(OAuth2BearerToken(token))) => token.right
-      case Some(_) => new Exception("Authorization header was not of type Bearer").left
-      case None => new Exception("Couldn't find an Authorization header").left
+      case Some(header) => InvalidHeaderType(header.toString).left
+      case None => NoAuthorizationHeader.left
     }
   }
 
-  def decodeJWT(token: String, secret: String): Throwable \/ DecodedJWT = {
+  def decodeJWT(token: String, secret: String): JWTAuthError \/ DecodedJWT = {
     \/.fromTryCatchNonFatal {
       JWT.require(Algorithm.HMAC256(secret)).build().verify(token)
+    }.leftMap {
+      case e => UnknownErrorVerifyingJWT(e)
     }
   }
 
-  def apply[A](secret: String, parse: DecodedJWT => Throwable \/ A): AuthMiddleware[A] = {
+  def apply[A](secret: String, debug: Boolean, parse: DecodedJWT => JWTAuthError \/ A): AuthMiddleware[A] = {
 
-    val authUser: Kleisli[Task, Request, Throwable \/ A] = Kleisli { req: Request =>
+    val authUser: Kleisli[Task, Request, JWTAuthError \/ A] = Kleisli { req: Request =>
       Task {
         for {
           bearerToken <- getBearerToken(req)
@@ -40,7 +59,10 @@ object JWTAuthMiddleware {
       }
     }
 
-    val onFailure: AuthedService[Throwable] = Kleisli(req => Forbidden(req.authInfo.getMessage))
+    val onFailure: AuthedService[JWTAuthError] = Kleisli { req =>
+      val message = if (debug) req.authInfo.render else req.authInfo.renderSanitized
+      Forbidden(message)
+    }
 
     AuthMiddleware(authUser, onFailure)
   }
