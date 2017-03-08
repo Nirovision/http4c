@@ -20,9 +20,9 @@ sealed trait JWTAuthError {
   }
 
   def render: String = this match {
-    case InvalidHeaderType(header) => s"Invalid Authorization value. Must be of type Bearer, not ${header}"
-    case NoAuthorizationHeader => s"Could not find an Authorization header"
-    case UnknownErrorVerifyingJWT(e) => s"Error verifying token: ${e.getMessage}"
+    case InvalidHeaderType(_) => this.renderSanitized
+    case NoAuthorizationHeader => this.renderSanitized
+    case UnknownErrorVerifyingJWT(e) => this.renderSanitized + s": ${e.getMessage}"
   }
 }
 case class InvalidHeaderType(header: String) extends JWTAuthError
