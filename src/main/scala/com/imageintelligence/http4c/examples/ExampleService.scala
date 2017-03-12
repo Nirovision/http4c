@@ -10,7 +10,7 @@ import scalaz.concurrent.Task
 
 object ExampleService extends ServerApp {
 
-  val jwtAuthedMiddleware = JWTAuthMiddleware("example secret", true, jwt => jwt.right)
+  val jwtAuthedMiddleware = JWTAuthMiddleware("example secret", jwt => jwt.right)
 
   val compiledService = Router(
     "/health"       -> ExampleHealthService.service,

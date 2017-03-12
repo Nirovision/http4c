@@ -47,7 +47,11 @@ object JWTAuthMiddleware {
     }
   }
 
-  def apply[A](secret: String, debug: Boolean, parse: DecodedJWT => JWTAuthError \/ A): AuthMiddleware[A] = {
+  private def defaultError(error: JWTAuthError) = {
+    Forbidden(error.render)
+  }
+
+  def apply[A](secret: String, parse: DecodedJWT => JWTAuthError \/ A, onError: JWTAuthError => Task[Response] = defaultError): AuthMiddleware[A] = {
 
     val authUser: Kleisli[Task, Request, JWTAuthError \/ A] = Kleisli { req: Request =>
       Task {
@@ -59,10 +63,7 @@ object JWTAuthMiddleware {
       }
     }
 
-    val onFailure: AuthedService[JWTAuthError] = Kleisli { req =>
-      val message = if (debug) req.authInfo.render else req.authInfo.renderSanitized
-      Forbidden(message)
-    }
+    val onFailure: AuthedService[JWTAuthError] = Kleisli(error => onError(error.authInfo))
 
     AuthMiddleware(authUser, onFailure)
   }
