@@ -21,6 +21,10 @@ object Depend {
     "com.auth0" % "java-jwt" % "3.0.1"
   )
 
+  lazy val bucket4j = Seq(
+    "com.github" % "bucket4j" % "1.3.0"
+  )
+
   lazy val scalaTestCheck = Seq(
     "org.scalatest"   %% "scalatest"  % "2.2.4",
     "org.scalacheck"  %% "scalacheck" % "1.12.1"
@@ -28,6 +32,7 @@ object Depend {
 
   lazy val depResolvers = Seq(
     "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
+    "JCenter Bintray Repo" at "http://jcenter.bintray.com",
     Resolver.sonatypeRepo("releases")
   )
 
@@ -36,5 +41,6 @@ object Depend {
     argonaut ++
     http4s ++
     jwt ++
+    bucket4j ++
     scalaTestCheck
 }
