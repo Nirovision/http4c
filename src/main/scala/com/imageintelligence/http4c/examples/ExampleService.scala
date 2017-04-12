@@ -5,6 +5,7 @@ import java.time.Duration
 import com.auth0.jwt.interfaces.DecodedJWT
 import com.imageintelligence.http4c.middleware._
 import org.http4s.AuthedRequest
+import org.http4s._
 import org.http4s.Response
 import org.http4s.server._
 import org.http4s.server.blaze.BlazeBuilder
@@ -15,23 +16,17 @@ import scalaz.concurrent.Task
 
 object ExampleService extends ServerApp {
 
-  val jwtAuthedMiddleware: AuthMiddleware[DecodedJWT] = JWTAuthMiddleware("example secret", jwt => jwt.right)
-
-  val rateLimitingMiddleware: Middleware[AuthedRequest[DecodedJWT], Response, AuthedRequest[DecodedJWT], Response] = RateLimitingMiddleware.simpleThrottling[AuthedRequest[DecodedJWT], String](req =>
-    req.authInfo.getIssuer, 1, Duration.ofSeconds(10)
+  val rateLimitingMiddleware: HttpMiddleware = RateLimitingMiddleware.simpleThrottling[Request, String](req =>
+    req.method.name, 1, Duration.ofSeconds(10)
   )
-
-  val composedRateLimitedAuthMiddleware: AuthMiddleware[DecodedJWT] =
-    jwtAuthedMiddleware.compose(rateLimitingMiddleware)
 
   val compiledService = Router(
     "/health"       -> ExampleHealthService.service,
     "/users"        -> ExampleUserService.service,
-    "/authed"       -> jwtAuthedMiddleware(ExampleAuthedService.service),
     "/bytes"        -> ExampleBytesService.service,
     "/argonaut"     -> ExampleArgonautService.service,
     "/api-response" -> ExampleApiResponse.service,
-    "/rate-limited" -> composedRateLimitedAuthMiddleware(ExampleAuthedService.service)
+    "/rate-limited" -> rateLimitingMiddleware(ExampleUserService.service)
   )
 
   val metricsMiddleware = MetricsMiddleware(x => println(x), (x, y, z) => println(x), "example")(_)
