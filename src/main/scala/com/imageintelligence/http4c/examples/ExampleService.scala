@@ -2,11 +2,8 @@ package com.imageintelligence.http4c.examples
 
 import java.time.Duration
 
-import com.auth0.jwt.interfaces.DecodedJWT
 import com.imageintelligence.http4c.middleware._
-import org.http4s.AuthedRequest
 import org.http4s._
-import org.http4s.Response
 import org.http4s.server._
 import org.http4s.server.blaze.BlazeBuilder
 
