@@ -6,7 +6,6 @@ import com.github.bucket4j._
 import org.http4s.Response
 import org.http4s.Service
 import org.http4s.dsl._
-import org.http4s.server.Middleware
 
 object RateLimitingMiddleware {
 

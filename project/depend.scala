@@ -18,7 +18,7 @@ object Depend {
 
   lazy val http4sServer = Seq(
     "org.http4s"  %% "http4s-blaze-server"
-  ).map(_ % "test")
+  ).map(_ % http4sVersion).map(_ % "test")
 
   lazy val bucket4j = Seq(
     "com.github" % "bucket4j" % "1.3.0"

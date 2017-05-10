@@ -3,7 +3,6 @@ package com.imageintelligence.http4c.middleware
 import argonaut._
 import Argonaut._
 import org.http4s._
-import org.http4s.server.HttpMiddleware
 
 case class JsonLogLine(req: Request, resp: Response)
 

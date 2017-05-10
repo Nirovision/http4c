@@ -1,7 +1,6 @@
 package com.imageintelligence.http4c.middleware
 
 import org.http4s._
-import org.http4s.server.HttpMiddleware
 
 import scala.concurrent.duration._
 import scalaz._
