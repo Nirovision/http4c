@@ -41,5 +41,5 @@ sbt test
 
 ## Examples
 
-Please see the [examples](./src/main/scala/com/imageintelligence/http4c/examples).
+Please see the [examples](src/test/scala/com/imageintelligence/http4c/examples).
 

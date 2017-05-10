@@ -12,10 +12,13 @@ object Depend {
   lazy val argonaut = Seq("io.argonaut" %% "argonaut" % argonautVersion)
 
   lazy val http4s = Seq(
-    "org.http4s"  %% "http4s-blaze-server",
     "org.http4s"  %% "http4s-dsl",
     "org.http4s"  %% "http4s-argonaut"
   ).map(_ % http4sVersion).map(_.withSources)
+
+  lazy val http4sServer = Seq(
+    "org.http4s"  %% "http4s-blaze-server"
+  ).map(_ % "test")
 
   lazy val bucket4j = Seq(
     "com.github" % "bucket4j" % "1.3.0"
@@ -36,6 +39,7 @@ object Depend {
     scalaz ++
     argonaut ++
     http4s ++
+    http4sServer ++
     bucket4j ++
     scalaTestCheck
 }
