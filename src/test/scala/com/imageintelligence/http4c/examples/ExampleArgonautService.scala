@@ -9,15 +9,14 @@ import org.http4s.dsl._
 import com.imageintelligence.http4c.ArgonautInstances._
 
 object ExampleArgonautService {
-  case class Person(name: String)
+  case class Person(name: String, job: Option[String])
 
-  implicit def DecodePerson: DecodeJson[Person] = DecodeJson[Person](
-    c => c.get[String]("name").map(Person.apply)
-  )
+  implicit def CodecPerson: CodecJson[Person] =
+    casecodec2(Person.apply, Person.unapply)("name", "job")
 
   val service = HttpService {
     case req @ POST -> Root => req.decode[Person] { person =>
-      Ok(person.toString)
+      Ok(person.asJson)
     }
   }
 }

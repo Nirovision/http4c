@@ -10,14 +10,15 @@ import org.http4s.headers.`Content-Type`
 import scalaz._, Scalaz._
 
 object Http4sAi extends Ai {
-  protected def defaultPrettyParams: PrettyParams = PrettyParams.spaces2
+  def defaultPrettyParams: PrettyParams = PrettyParams.nospace.copy(
+    preserveOrder = true,
+    dropNullKeys = true
+  )
 }
 
 object ArgonautInstances {
 
-  protected def defaultPrettyParams: PrettyParams = PrettyParams.nospace
-
-  def jsonEncoder[A](prettyParams: PrettyParams = defaultPrettyParams): EntityEncoder[Json] = {
+  def jsonEncoder[A](prettyParams: PrettyParams = Http4sAi.defaultPrettyParams): EntityEncoder[Json] = {
     EntityEncoder.stringEncoder(Charset.`UTF-8`).contramap[Json] { json =>
       prettyParams.pretty(json)
     }.withContentType(`Content-Type`(MediaType.`application/json`, Charset.`UTF-8`))
