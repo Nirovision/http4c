@@ -32,7 +32,7 @@ object ApiResponse {
 
   implicit def ApiResponseEncoder[A]: EntityEncoder[ApiResponse[A]] = {
     EntityEncoder.stringEncoder(Charset.`UTF-8`).contramap[ApiResponse[A]] { r: ApiResponse[A] =>
-      Argonaut.nospace.pretty(r.render)
+      Http4sAi.defaultPrettyParams.pretty(r.render)
     }.withContentType(`Content-Type`(MediaType.`application/json`, Charset.`UTF-8`))
   }
 }
