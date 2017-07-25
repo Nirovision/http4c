@@ -26,7 +26,7 @@ object ExampleService extends ServerApp {
     "/rate-limited" -> rateLimitingMiddleware(ExampleUserService.service)
   )
 
-  val metricsMiddleware = MetricsMiddleware(x => println(x), (x, y, z) => println(x), "example")(_)
+  val metricsMiddleware = MetricsMiddleware(x => println(x), (x, y, z) => println(s"${x}, ${y}, ${z}"), "example")(_)
   val jsonLoggingMiddleware = LoggingMiddleware.jsonLoggingMiddleware(x => println(x))(_)
   val basicLoggingMiddleware = LoggingMiddleware.basicLoggingMiddleware(x => println(x))(_)
   val middlewareStack = metricsMiddleware andThen jsonLoggingMiddleware andThen basicLoggingMiddleware

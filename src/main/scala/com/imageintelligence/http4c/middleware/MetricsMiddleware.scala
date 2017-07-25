@@ -21,7 +21,7 @@ object MetricsMiddleware {
 
     def statusCodeToTag(code: Int): String = {
       val flooredCode = (code / 100) * 100
-      prefix(s".status.${flooredCode.toString}")
+      s"status:${flooredCode.toString}"
     }
 
     def generalMetrics(method: Method, code: Int, elapsed: FiniteDuration): Unit = {
