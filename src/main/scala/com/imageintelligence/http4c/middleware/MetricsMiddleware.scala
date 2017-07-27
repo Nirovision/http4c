@@ -20,8 +20,8 @@ object MetricsMiddleware {
     }
 
     def statusCodeToTag(code: Int): String = {
-      val flooredCode = (code / 100) * 100
-      s"status:_${flooredCode.toString}"
+      val flooredCode = (code / 100)
+      s"status:code_${flooredCode.toString}xx"
     }
 
     def generalMetrics(method: Method, code: Int, elapsed: FiniteDuration): Unit = {
