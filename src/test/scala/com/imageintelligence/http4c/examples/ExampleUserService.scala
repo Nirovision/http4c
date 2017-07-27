@@ -1,6 +1,7 @@
 package com.imageintelligence.http4c.examples
 
 import com.imageintelligence.http4c.DslHelpers
+import com.imageintelligence.http4c.headers.`X-Proxy-Cache`
 import org.http4s.ParseFailure
 import org.http4s.HttpService
 import org.http4s.dsl._
@@ -37,7 +38,7 @@ object ExampleUserService {
   val service = HttpService {
     case req @ GET -> Root / UserIdMatcher(userId) :? GenderQueryParam(gender)  => {
       userId match {
-        case \/-(id) => Ok(id.value)
+        case \/-(id) => Ok(id.value).putHeaders(`X-Proxy-Cache`(false))
         case -\/(error) => BadRequest(error)
       }
     }
