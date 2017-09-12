@@ -2,9 +2,9 @@ package com.imageintelligence.http4c
 
 import org.http4s._
 import org.http4s.dsl._
-
-import scalaz._
-import scalaz.Scalaz._
+import cats._
+import cats.data.Validated
+import cats.implicits._
 
 object DslHelpers {
 
@@ -16,18 +16,18 @@ object DslHelpers {
     MatchPathVar(f)
   }
 
-  def validatingPathMatcher[E, A](f: String => E \/ A): MatchPathVar[E \/ A] = {
-    val v: String => Option[E \/ A] = f(_) match {
-      case \/-(a)   => Some(a.right)
-      case -\/(e) => Some(e.left)
+  def validatingPathMatcher[E, A](f: String => Either[E, A]): MatchPathVar[Either[E, A]] = {
+    val v: String => Option[Either[E, A]] = f(_) match {
+      case Right(a)   => Some(Right(a))
+      case Left(e) => Some(Left(e))
     }
     MatchPathVar(v)
   }
 
-  def queryParamDecoderFromEither[A](f: String => ParseFailure \/ A): QueryParamDecoder[A] = {
+  def queryParamDecoderFromEither[A](f: String => Either[ParseFailure,A]): QueryParamDecoder[A] = {
     new QueryParamDecoder[A] {
       def decode(value: QueryParameterValue) = {
-        Validation.fromEither(f(value.value).toEither).toValidationNel
+        Validated.fromEither(f(value.value)).toValidatedNel
       }
     }
   }

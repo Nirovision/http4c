@@ -1,13 +1,8 @@
 import sbt._
 
 object Depend {
-  lazy val scalazVersion = "7.2.6"
-  lazy val http4sVersion = "0.15.2a"
+  lazy val http4sVersion = "0.18.0-M1"
   lazy val argonautVersion = "6.2-RC2"
-
-  lazy val scalaz = Seq(
-    "org.scalaz" %% "scalaz-core"
-  ).map(_ % scalazVersion)
 
   lazy val argonaut = Seq("io.argonaut" %% "argonaut" % argonautVersion)
 
@@ -20,10 +15,6 @@ object Depend {
     "org.http4s"  %% "http4s-blaze-server"
   ).map(_ % http4sVersion).map(_ % "test")
 
-  lazy val bucket4j = Seq(
-    "com.github" % "bucket4j" % "1.3.0"
-  )
-
   lazy val scalaTestCheck = Seq(
     "org.scalatest"   %% "scalatest"  % "2.2.4",
     "org.scalacheck"  %% "scalacheck" % "1.12.1"
@@ -35,11 +26,9 @@ object Depend {
     Resolver.sonatypeRepo("releases")
   )
 
-  lazy val dependencies = 
-    scalaz ++
+  lazy val dependencies =
     argonaut ++
     http4s ++
     http4sServer ++
-    bucket4j ++
     scalaTestCheck
 }

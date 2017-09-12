@@ -1,9 +1,10 @@
 package com.imageintelligence.http4c.headers
 
-import scalaz._, Scalaz._
 import org.http4s.util.Writer
 import org.http4s.dsl._
 import org.http4s._
+import cats._
+import cats.implicits._
 
 final case class `X-Proxy-Cache`(cacheHit: Boolean) extends Header.Parsed {
   override def key = `X-Proxy-Cache`
@@ -22,11 +23,11 @@ object `X-Proxy-Cache` extends HeaderKey.Singleton {
 
   def parse(s: String): ParseResult[`X-Proxy-Cache`] = {
     s match {
-      case "HIT" => `X-Proxy-Cache`(true).right
-      case "MISS" => `X-Proxy-Cache`(false).right
+      case "HIT" => Right(`X-Proxy-Cache`(true))
+      case "MISS" => Right(`X-Proxy-Cache`(false))
       case other => {
         val e = s"$other is not a valid X-Proxy-Cache header"
-        ParseFailure.apply(e, e).left
+        Left(ParseFailure.apply(e, e))
       }
     }
   }

@@ -5,9 +5,6 @@ import org.scalatest.FunSpec
 import org.scalatest.Matchers
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 
-import scalaz._
-import Scalaz._
-
 class DslHelpersSpec extends FunSpec with Matchers with GeneratorDrivenPropertyChecks {
 
   val genPaths = Gen.chooseNum(1, 10).flatMap(n => Gen.listOfN(n, Gen.alphaLowerChar)).map(_.mkString(""))
@@ -34,10 +31,10 @@ class DslHelpersSpec extends FunSpec with Matchers with GeneratorDrivenPropertyC
     it("should match a path and provide a successful validation") {
       forAll(genPaths) { path =>
         val matcher = DslHelpers.validatingPathMatcher { path =>
-          if (path.length <= 10) path.right
-          else s"$path should be longer than 10".left
+          if (path.length <= 10) Right(path)
+          else Left(s"$path should be longer than 10")
         }
-        matcher.unapply(path) should be(Some(\/-(path)))
+        matcher.unapply(path) should be(Some(Right(path)))
       }
     }
 
@@ -45,10 +42,10 @@ class DslHelpersSpec extends FunSpec with Matchers with GeneratorDrivenPropertyC
       forAll(genPaths) { path =>
         val error = s"$path should be longer than 10"
         val matcher = DslHelpers.validatingPathMatcher { path =>
-          if (path.length > 11) path.right
-          else error.left
+          if (path.length > 11) Right(path)
+          else Left(error)
         }
-        matcher.unapply(path) should be(Some(-\/(error)))
+        matcher.unapply(path) should be(Some(Left(error)))
       }
     }
   }
