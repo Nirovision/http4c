@@ -1,19 +1,20 @@
 package com.imageintelligence.http4c.middleware
 
+import cats.effect._
+import cats.implicits._
+import cats._
 import org.http4s._
-
 import scala.concurrent.duration._
-import scalaz._
-import Scalaz._
-import scalaz.concurrent.Task
-import scalaz.stream.Cause.End
-import scalaz.stream.Process._
 
 object MetricsMiddleware {
 
   val metricsPrefix = "http4s"
 
-  def apply(increment: String => Unit, histogram: (String, Long, String*) => Unit, servicePrefix: String): HttpMiddleware = { service =>
+  def apply[F[_]](
+    increment: String => Unit,
+    histogram: (String, Long, String*) => Unit,
+    servicePrefix: String)(implicit F: Effect[F]
+  ): HttpMiddleware[F] = { service =>
 
     def prefix(str: String): String = {
       s"${metricsPrefix}.${servicePrefix}.${str}"
@@ -30,35 +31,35 @@ object MetricsMiddleware {
       histogram(prefix("response.ms"), elapsed.toMillis, tag)
     }
 
-    def onFinish(method: Method, start: Long)(responseE: Throwable \/ Response): Throwable \/ Response = {
+    def onFinish(method: Method, start: Long)(responseE: Either[Throwable, MaybeResponse[F]]): Either[Throwable, MaybeResponse[F]] = {
       val elapsed = (System.nanoTime() - start).nanos
-      responseE match {
-        case \/-(response) => {
-          histogram(prefix("headers.ms"), (System.nanoTime() - start).nanos.toMillis)
-          val code = response.status.code
-          val body = response.body.onHalt { cause =>
-            generalMetrics(method, code, elapsed)
-            cause match {
-              case End => halt
-              case _   =>
+
+      responseE.map { r =>
+        histogram(prefix("headers.ms"), (System.nanoTime() - start).nanos.toMillis)
+        r match {
+          case a: Response[F] => {
+            val code = a.status.code
+            val x: fs2.Stream[F, Byte] = a.body
+              .onFinalize {
+                F.delay{
+                  generalMetrics(method, code, elapsed)
+                }
+              }
+              .onError { cause =>
                 histogram(prefix("abnormal_termination.ms"), elapsed.toMillis)
-                Halt(cause)
-            }
+                fs2.Stream.fail(cause)
+              }
+            a.copy(body = x)
           }
-          response.copy(body = body).right
-        }
-        case -\/(e) => {
-          generalMetrics(method, 500, elapsed)
-          histogram(prefix("service_failure.ms"), elapsed.toMillis)
-          e.left
+          case other => other
         }
       }
     }
 
-    Service.lift { req: Request =>
+    Service.lift { req: Request[F] =>
       val now = System.nanoTime()
       increment(prefix("active_requests"))
-      service(req).attempt.flatMap(onFinish(req.method, now)(_).fold(Task.fail, Task.now))
+      service(req).attempt.flatMap(onFinish(req.method, now)(_).fold(F.raiseError, F.pure))
     }
   }
 }

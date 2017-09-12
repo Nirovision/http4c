@@ -1,6 +1,5 @@
 package com.imageintelligence.http4c.headers
 
-import scalaz._, Scalaz._
 import org.http4s.HeaderKey
 import org.http4s.dsl._
 import org.http4s._
@@ -23,6 +22,6 @@ object `X-Http-Method-Override` extends HeaderKey.Singleton {
   }
 
   def parse(s: String): ParseResult[`X-Http-Method-Override`] = {
-    `X-Http-Method-Override`(s).right
+    Right(`X-Http-Method-Override`(s))
   }
 }

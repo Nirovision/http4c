@@ -1,10 +1,8 @@
 package com.imageintelligence.http4c.headers
 
-import scalaz._, Scalaz._
 import org.http4s.HeaderKey
 import org.http4s.dsl._
 import org.http4s._
-import org.http4s.util.CaseInsensitiveString
 import org.http4s.util.Writer
 import scala.util.Try
 
@@ -24,6 +22,6 @@ object `Accept-Version` extends HeaderKey.Singleton {
   }
 
   def parse(s: String): ParseResult[`Accept-Version`] = {
-    `Accept-Version`(s).right
+    Right(`Accept-Version`(s))
   }
 }

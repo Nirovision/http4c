@@ -2,20 +2,24 @@ package com.imageintelligence.http4c.middleware
 
 import org.http4s._
 import com.imageintelligence.http4c.headers.`X-Http-Method-Override`
-import scalaz.concurrent.Task
-import scalaz.{\/-, -\/}
+import cats._
+import cats.implicits._
 
 object XHttpMethodOverrideMiddleware {
-  def defaultFailureResponse: Task[Response] =
-    Response(Status.BadRequest).withBody(s"Invalid HTTP method provided in ${`X-Http-Method-Override`.name} header")
+  def defaultFailureResponse[F[_]: Monad]: F[Response[F]] =
+    Response[F](Status.BadRequest).withBody(s"Invalid HTTP method provided in ${`X-Http-Method-Override`.name} header")
 
-  def apply(service: HttpService, failureResponseO: Option[Response] = None): HttpService = Service.lift { req =>
+  def apply[F[_]: Monad](service: HttpService[F], failureResponseO: Option[F[Response[F]]] = None): HttpService[F] = HttpService.lift[F] { req =>
     req.headers.get(`X-Http-Method-Override`) match {
       case Some(method) => Method.fromString(method.method) match {
-        case -\/(failure) => failureResponseO.fold(defaultFailureResponse)(response => Task(response))
-        case \/-(success) => {
+        case Left(_) => {
+          defaultFailureResponse[F].map(_.asMaybeResponse)
+        }
+        case Right(success) => {
           Method.registered.exists(_ == success) match {
-            case false => failureResponseO.fold(defaultFailureResponse)(response => Task(response))
+            case false => {
+              failureResponseO.fold(defaultFailureResponse[F])(response => response).map(_.asMaybeResponse)
+            }
             case true  => service(req.copy(method = success))
           }
         }

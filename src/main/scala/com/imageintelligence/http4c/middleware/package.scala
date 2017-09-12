@@ -3,8 +3,8 @@ import org.http4s._
 
 package object middleware {
 
-  type Middleware[A, B, C, D] = Service[A, B] => Service[C, D]
+  type Middleware[F[_], A, B, C, D] = Service[F, A, B] => Service[F, C, D]
 
-  type HttpMiddleware = Middleware[Request, Response, Request, Response]
+  type HttpMiddleware[F[_]] = Middleware[F, Request[F], MaybeResponse[F], Request[F], MaybeResponse[F]]
 
 }

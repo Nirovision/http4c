@@ -1,17 +1,17 @@
 package com.imageintelligence.http4c
 
 import java.util.concurrent.TimeUnit
-import scalaz._
-import Scalaz._
+
 import argonaut._
 import Argonaut._
 import org.http4s._
 import org.http4s.dsl._
 import com.imageintelligence.http4c.Health._
 import ArgonautInstances._
+import cats.implicits._
+import cats._
 
 import scala.concurrent.duration.Duration
-import scalaz.concurrent.Task
 
 object Health {
 
@@ -40,7 +40,7 @@ object Health {
   final case object HealthCheckSuccess extends HealthCheckStatus
   final case class HealthCheckFailure(reason: Throwable, fatal: Boolean) extends HealthCheckStatus
 
-  case class HealthCheck(name: String, check: Task[HealthCheckStatus])
+  case class HealthCheck[F[_]: Applicative](name: String, check: F[HealthCheckStatus])
 
   case class HealthCheckResult(name: String, status: HealthCheckStatus, timeTaken: Duration)
 
@@ -54,11 +54,11 @@ object Health {
     }
   }
 
-  case class HealthReport(checks: List[HealthCheck]) {
-    def check: Task[HealthReportResult] = {
-      val results: Task[List[HealthCheckResult]] = checks.traverseU { c =>
-        val timedTask = timeM(Task.apply(System.currentTimeMillis()), c.check)
-        timedTask.map { case (duration, status) => HealthCheckResult(c.name, status, duration) }
+  case class HealthReport[F[_]: Monad](checks: List[HealthCheck[F]]) {
+    def check: F[HealthReportResult] = {
+      val results: F[List[HealthCheckResult]] = checks.traverse { c =>
+        val timed = timeM(System.currentTimeMillis().pure[F], c.check)
+        timed.map { case (duration, status) => HealthCheckResult(c.name, status, duration) }
       }
       results.map(x => HealthReportResult(uptime, x))
     }
@@ -98,14 +98,15 @@ object Health {
   }
 }
 
-case class HealthReportService(healthReport: HealthReport) {
-  val service = HttpService {
+case class HealthReportService[F[_]: Monad](healthReport: HealthReport[F]) {
+  val service = HttpService[F] {
     case req @ GET -> Root => {
       healthReport.check.flatMap { result =>
-        if (result.isFatal)
-          InternalServerError(result.asJson)
-        else
-          Ok(result.asJson)
+        if (result.isFatal) {
+          Response(Status.Ok).withBody(result.asJson)
+        } else {
+          Response(Status.Ok).withBody(result.asJson)
+        }
       }
     }
   }
