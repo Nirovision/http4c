@@ -39,7 +39,7 @@ object ApiResponse {
 object ApiResponseUtils {
 
   def decodeAs[A, F[_]: Monad](req: Request[F])(f: A => F[Response[F]])(implicit decoder: EntityDecoder[F, A]) = {
-    decoder.decode(req, strict = true).fold(
+    decoder.decode(req, strict = false).fold(
       failure => Response[F](Status.UnprocessableEntity).withBody[ApiResponse[Nothing]](ApiResponse.failure(failure.getMessage)),
       success => f(success)
     ).flatten
