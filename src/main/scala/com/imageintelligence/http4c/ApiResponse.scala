@@ -5,7 +5,6 @@ import Argonaut._
 import cats._
 import cats.implicits._
 import org.http4s._
-import org.http4s.dsl._
 import org.http4s.headers._
 import com.imageintelligence.http4c.ArgonautInstances._
 
@@ -40,7 +39,7 @@ object ApiResponseUtils {
 
   def decodeAs[A, F[_]: Monad](req: Request[F])(f: A => F[Response[F]])(implicit decoder: EntityDecoder[F, A]) = {
     decoder.decode(req, strict = false).fold(
-      failure => Response[F](Status.UnprocessableEntity).withBody[ApiResponse[Nothing]](ApiResponse.failure(failure.getMessage)),
+      failure => Response[F](Status.BadRequest).withBody[ApiResponse[Nothing]](ApiResponse.failure(failure.getMessage)),
       success => f(success)
     ).flatten
   }

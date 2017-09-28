@@ -8,7 +8,6 @@ import cats.effect.Sync
 import org.http4s._
 import org.http4s.argonaut.{ArgonautInstances => Ai}
 import org.http4s.headers.`Content-Type`
-//import scalaz._, Scalaz._
 import cats.implicits._
 import cats._
 
