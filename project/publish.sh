@@ -1,4 +1,2 @@
 #!/bin/bash
-mkdir -p ~/.bintray
-eval "echo \"$(< ./project/bintray.template)\"" > ~/.bintray/.credentials
-sbt publish
+sbt -Dbintray.user=$BINTRAY_USER -Dbintray.pass=$BINTRAY_PASSWORD +publish

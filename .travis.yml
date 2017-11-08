@@ -1,6 +1,6 @@
 language: scala
 scala:
-- 2.11.8
+- 2.12.4
 jdk:
   - oraclejdk8
 env:
@@ -9,8 +9,10 @@ env:
 
 deploy:
   provider: script
+  skip_cleanup: true
   script: project/publish.sh
   on:
     tags: true
 
-script: sbt test
+script:
+  - sbt -Dbintray.user=$BINTRAY_USER -Dbintray.pass=$BINTRAY_PASSWORD +test

@@ -2,7 +2,7 @@ import sbt._
 
 object Depend {
   lazy val http4sVersion = "0.18.0-M1"
-  lazy val argonautVersion = "6.2-RC2"
+  lazy val argonautVersion = "6.2"
 
   lazy val argonaut = Seq("io.argonaut" %% "argonaut" % argonautVersion)
 
@@ -16,8 +16,8 @@ object Depend {
   ).map(_ % http4sVersion).map(_ % "test")
 
   lazy val scalaTestCheck = Seq(
-    "org.scalatest"   %% "scalatest"  % "2.2.4",
-    "org.scalacheck"  %% "scalacheck" % "1.12.1"
+    "org.scalatest"   %% "scalatest"  % "3.0.4",
+    "org.scalacheck"  %% "scalacheck" % "1.13.4"
   ).map(_.withSources).map(x => x.force()).map(_ % "test")
 
   lazy val depResolvers = Seq(
