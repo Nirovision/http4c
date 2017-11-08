@@ -7,6 +7,7 @@ lazy val buildSettings = Seq(
   organization := "com.imageintelligence",
   version := Try(sys.env("LIB_VERSION")).getOrElse("1.0.0"),
   scalaVersion := "2.12.4",
+  crossScalaVersions := Seq("2.11.0"),
   resolvers := Depend.depResolvers,
   libraryDependencies := Depend.dependencies,
   licenses += ("MIT", url("http://opensource.org/licenses/MIT")),
